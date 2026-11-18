@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>On Hands</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f1f3f8;--card:#fff;--tx:#1d2330;--mut:#6b7385;--ln:#dfe3ec;--pri:#3b6fd8;--sale:#cfe3d8;--amt:#f1e2c8;--tot:#d3d3d6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171a21;--card:#232734;--tx:#e8ebf2;--mut:#98a0b3;--ln:#363c4d;--pri:#7aa2f7;--sale:#2c4a3c;--amt:#554423;--tot:#30343f}}
+:root[data-theme="dark"]{--bg:#171a21;--card:#232734;--tx:#e8ebf2;--mut:#98a0b3;--ln:#363c4d;--pri:#7aa2f7;--sale:#2c4a3c;--amt:#554423;--tot:#30343f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px;margin:0 auto}
+.tabs{display:flex;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5;border-bottom:2px solid var(--ln)}
+.tabs button{flex:1;padding:12px;border:0;background:none;color:var(--mut);font-weight:600;font-size:15px;border-bottom:3px solid transparent;margin-bottom:-2px}
+.tabs button.on{color:var(--pri);border-color:var(--pri)}
+.bar{display:flex;gap:8px;padding:10px;align-items:center}
+.bar input,.bar select{flex:1;min-width:0;padding:8px;border:1px solid var(--ln);border-radius:10px;background:var(--card);color:var(--tx);font-size:14px}
+.bar button{padding:9px 14px;border:1px solid var(--ln);border-radius:10px;background:var(--card);color:var(--tx);font-weight:600}
+.row,.hd{display:grid;grid-template-columns:22px minmax(90px,1.6fr) var(--w0,52px) var(--w1,52px) var(--w2,52px) var(--w3,52px);gap:4px;align-items:center;padding:3px 8px;border-bottom:1px solid var(--ln)}
+.hd{font-weight:600;color:var(--mut);font-size:13px;text-align:center}
+.nm{font-size:13.5px;line-height:1.2}.nm small{display:block;color:var(--mut)}
+input.n{width:100%;min-width:0;height:28px;padding:2px 4px;border:1px solid var(--ln);border-radius:10px;background:var(--card);color:var(--tx);text-align:center;font-size:13px}
+.s,.a{padding:8px 2px;border-radius:10px;text-align:center;font-size:12.5px}
+.s{background:var(--sale)}.a{background:var(--amt)}
+.tot{background:var(--tot);font-weight:700}
+.tot .s,.tot .a,.tot .v{background:var(--card);padding:4px 2px;border-radius:8px;text-align:center;font-size:12.5px}
+.tot .s{background:var(--sale)}.tot .a{background:var(--amt)}
+.gt{background:var(--tot);font-weight:700}
+.empty{padding:30px;text-align:center;color:var(--mut)}
+.sr{text-align:center;color:var(--mut);font-size:13px}
+.rate{background:none;border:0;color:var(--pri);font-size:11px;padding:0}
+#toast{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:9px 16px;border-radius:20px;display:none;font-size:13px}
+.row{scroll-margin-top:110px}
+#mn{display:none;position:fixed;inset:0;background:var(--bg);z-index:20;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,0px)}
+.ph{display:flex;gap:16px;align-items:center;background:#12294a;color:#fff;padding:calc(14px + env(safe-area-inset-top,0px)) 14px 14px;font-size:20px;position:sticky;top:0}
+.ph b{font-size:18px}.ph span{cursor:pointer}
+.pb{max-width:560px;margin:0 auto;padding:12px}
+.pbtn{display:flex;gap:8px}.pbtn button{flex:1;padding:12px 6px;border:0;border-radius:10px;color:#fff;font-size:14px}
+.bl{background:#2f6fe0}.rd{background:#d9534f}
+#pinfo{font-size:12.5px;color:var(--mut);margin:8px 0}
+#mq{width:100%;padding:10px;border:1px solid var(--ln);border-radius:10px;background:var(--card);color:var(--tx);margin-bottom:12px;font-size:14px}
+.tb{background:var(--card);border:1px solid var(--ln);border-radius:10px;overflow:hidden}
+.th,.tr{display:grid;grid-template-columns:30px 1fr 56px 84px;gap:6px;align-items:center;padding:14px 10px;border-bottom:1px solid var(--ln);font-size:14px}
+.th{font-weight:700}.pn{cursor:pointer}
+.ac{display:flex;gap:6px}.ac button{width:36px;height:34px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--tx)}
+.ac button.arm{background:#d9534f;color:#fff}
+#md{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:30;align-items:center;justify-content:center;padding:14px}
+.box{background:var(--card);border-radius:14px;padding:16px;width:100%;max-width:420px}
+.box h3{margin:0 0 10px;display:flex;justify-content:space-between}
+.box label{font-size:13px;display:block;margin:8px 0 4px}
+.box input,.box select{width:100%;padding:10px;border:1px solid var(--ln);border-radius:10px;background:var(--card);color:var(--tx);font-size:14px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.box .bl{width:100%;margin-top:14px;padding:12px;border:0;border-radius:10px;color:#fff;font-size:15px}
+.row.s1,.hd.s1{grid-template-columns:22px minmax(70px,1fr) var(--s0,62px) var(--s1,62px) var(--s2,62px)}
+#lk{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50;align-items:center;justify-content:center;padding:14px}
+.sc{overflow-x:scroll;padding-bottom:4px}.sc>.in{width:max-content;min-width:100%}
+.sc::-webkit-scrollbar{height:10px}.sc::-webkit-scrollbar-thumb{background:var(--mut);border-radius:6px}.sc::-webkit-scrollbar-track{background:var(--ln)}
+.locked #v1 input{pointer-events:none;opacity:.65}.locked #dt,.locked #mb{opacity:.5}
+.nb{padding-bottom:0;scrollbar-width:none}.nb::-webkit-scrollbar{display:none}
+.row:not(.tot):not(.gt),.hd{background:var(--bg)}
+#v1 .row>:nth-child(-n+2),#v1 .hd>:nth-child(-n+2){position:sticky;z-index:2;background:inherit}
+#v1 .row>:nth-child(1),#v1 .hd>:nth-child(1){left:0}
+#v1 .row>:nth-child(2),#v1 .hd>:nth-child(2){left:26px}
+.blk{display:flex;align-items:flex-start}
+.lf{flex:0 0 156px;width:156px;background:var(--bg);position:relative;z-index:3}
+.lr{display:grid;grid-template-columns:22px 1fr;gap:4px;align-items:center;height:38px;padding:0 6px 0 8px;border-bottom:1px solid var(--ln);overflow:hidden;scroll-margin-top:110px}
+.lr .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rr{display:grid;grid-template-columns:var(--w0,52px) var(--w1,52px) var(--w2,52px) var(--w3,52px);gap:4px;align-items:center;height:38px;padding:0 8px 0 4px;border-bottom:1px solid var(--ln)}
+.hl,.hr{font-weight:600;color:var(--mut);font-size:13px;text-align:center}
+.lr.tot,.rr.tot,.lr.gt,.rr.gt{background:var(--tot);font-weight:700}
+.rr .v{background:var(--card);padding:4px 2px;border-radius:8px;text-align:center;font-size:12.5px}
+.blk .sc{flex:1;min-width:0}
+.dn,.dp{border-radius:8px;padding:4px 2px;font-weight:600}
+.dn{background:rgba(46,160,67,.28)!important;color:#1e7a34}.dp{background:rgba(217,48,37,.25)!important;color:#c5221f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dn{color:#7ee2a0}:root:not([data-theme="light"]) .dp{color:#ff9b94}}
+#v2 .in{width:100%;min-width:0}
+.row.s1,.hd.s1{grid-template-columns:22px minmax(0,1fr) var(--s0,62px) var(--s1,62px) var(--s2,62px)}
+.sp{display:inline-block;width:14px;height:14px;border:2px solid var(--ln);border-top-color:var(--pri);border-radius:50%;animation:rot .8s linear infinite;vertical-align:-2px;margin-right:6px}@keyframes rot{to{transform:rotate(360deg)}}
+#rv{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40;align-items:center;justify-content:center;padding:14px}
+.rvb{max-height:88vh;display:flex;flex-direction:column}
+#rvl{overflow-y:auto;margin:8px 0;flex:1}
+.rvr{display:grid;grid-template-columns:24px 1fr 90px;gap:6px;align-items:center;padding:3px 0;font-size:13px}
+.rvr input{padding:6px;text-align:center}
+.row.s1.s2,.hd.s1.s2{grid-template-columns:22px minmax(0,1fr) var(--s0,62px)}
+</style></head><body>
+<div class="tabs"><button id="t1" class="on" onclick="tab(1)">On Hands</button><button id="t2" onclick="tab(2)">Summary</button></div>
+<div class="bar"><button id="mb" onclick="menu(1)" aria-label="Menu">☰</button><input type="date" id="dt"><button id="sv" onclick="saveAll()">Save</button><button id="ul" style="display:none" onclick="askUnlock()">&#128274; Unlock</button><button id="up" style="display:none" onclick="pickImg()">Upload</button><input type="file" id="imf" accept="image/*" style="display:none" onchange="readImg(this)"><button onclick="expFile()">Export</button></div>
+<div id="v1"></div><div id="v2" style="display:none"></div><div id="mn"><div class="ph"><span onclick="menu(0)">&#9776;</span><span onclick="menu(0)">&larr;</span><b>Product List</b></div>
+<div class="pb"><div class="pbtn"><button class="bl" onclick="$('pf').click()">Upload Excel File</button><input type="file" id="pf" accept=".xlsx,.xls,.csv" style="display:none" onchange="upl(this)"><button class="bl" onclick="edit(-1)">Add New Product</button><button class="rd" id="clb" onclick="clr()">Clear Data</button></div>
+<div id="pinfo"></div><input id="mq" placeholder="Search..." oninput="mlist()">
+<div class="tb"><div class="th"><span>Sr</span><span>Name</span><span>Category</span><span>Action</span></div><div id="ml"></div></div></div></div>
+<div id="md"><div class="box"><h3><span id="et">Edit Product</span><span onclick="$('md').style.display='none'" style="cursor:pointer">&times;</span></h3>
+<label>Product Name</label><input id="en"><label>Category</label><select id="ec"><option>FMC</option><option>VELO</option></select>
+<div class="g2"><div><label>Retail Price</label><input id="er" inputmode="decimal"></div><div><label>W.S. Price</label><input id="ew" inputmode="decimal"></div>
+<div><label>Packs/Outer</label><input id="eo" inputmode="decimal"></div><div><label>Sticks/Pack</label><input id="es" inputmode="decimal"></div><div><label>Outer/Carton</label><input id="eq" inputmode="decimal"></div></div>
+<button class="bl" onclick="esave()">Save</button></div></div>
+<div id="lk"><div class="box"><h3><span>&#128274; Unlock</span><span onclick="$('lk').style.display='none'" style="cursor:pointer">&times;</span></h3><input id="lp" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')unlock()"><button class="bl" onclick="unlock()">Unlock</button><div id="le" style="color:#d9534f;font-size:13px;margin-top:8px"></div></div></div>
+<div id="rv"><div class="box rvb"><h3><span>Onhand figures</span><span onclick="$('rv').style.display='none'" style="cursor:pointer">&times;</span></h3><div id="rvm" style="font-size:13px"></div><div id="rvl"></div><div id="rvk" style="display:none;margin:6px 0"><input id="rvkey" type="password" placeholder="Claude API key (sk-ant-...)"><button class="bl" style="margin-top:6px" onclick="saveKey()">Key save karein</button></div>
+<details><summary style="font-size:12px">OCR text</summary><pre id="rvt" style="font-size:11px;white-space:pre-wrap;max-height:120px;overflow:auto"></pre></details><button class="bl" onclick="applyRev()">Apply</button></div></div>
+<div id="toast"></div>
+<script src="xlsx.full.min.js"></script>
+<script src="sql-asm.js"></script>
+<script src="tesseract/tesseract.min.js"></script>
+<script>
+// [sr, naam, group, rate]  -- rate yahan ya app me naam par tap karke set karein
+const F='FMC',V='VELO';
+const DEF=[
+[1,'dunhill SPL 20HL',F,0],[2,'Dunhill SPL 20HL',F,0],[3,'B & H 20HL',F,0],[4,'Gold Leaf 20HL',F,0],[5,'John Player 20 HL',F,0],[6,'Capstain Filter 20HL',F,0],[7,'Pall Mall 20HL',F,0],[8,'International 20HL',F,0],[9,'Gold Flake 20HL',F,0],
+[10,'SKU 10',F,0],[11,'SKU 11',F,0],[12,'SKU 12',F,0],[13,'Lucky Strike 20HL',F,0],
+[14,'Berry Frost 10MG',V,0],[15,'Berry Frost 14MG',V,0],[16,'Berry Frost 6MG',V,0],[17,'Groovy Grape 10MG',V,0],[18,'Frosty Lemon 10MG',V,0],[19,'Polar Mint 10MG',V,0],[20,'Polar Mint 14MG',V,0],[21,'Polar Mint 6MG',V,0],[22,'Rich Elaichi 10MG',V,0],[23,'Papper Storm 14MG',V,0],
+[24,'SKU 24',V,0],[25,'SKU 25',V,0],[26,'SKU 26',V,0],[27,'SKU 27',V,0],[28,'SKU 28',V,0],
+[29,'Polar Mint 17MG',V,0],[30,'Groovy Grape 17MG',V,0],[31,'Polar Mint 4MG',V,0],[32,'Berry Frost 4MG',V,0]];
+let PR=null,ITEMS=[];
+try{const raw=localStorage.getItem('pl');if(raw)PR=JSON.parse(raw)}catch(e){}
+if(!PR)PR=DEF.map(d=>({id:d[0],name:d[1],cat:d[2],retail:0,ws:0,ppo:10,spp:20,opc:d[2]==='VELO'?24:50}));
+function rebuild(){ITEMS=PR.map(p=>[p.id,p.name,p.cat,0])}
+const savePR=()=>{try{localStorage.setItem('pl',JSON.stringify(PR))}catch(e){}};
+rebuild();
+const td=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+let S={date:td(),dr:0,q:{},rate:{},days:{}};
+try{const x=JSON.parse(localStorage.getItem('oh2')||'null');if(x){S.rate=x.rate||{};S.days=x.days||{};if(!x.days&&x.q)S.days[x.date]=x.q}}catch(e){}
+S.q=S.days[S.date]||(S.days[S.date]={});
+const save=()=>{try{S.days[S.date]=S.q;localStorage.setItem('oh2',JSON.stringify({date:S.date,days:S.days,rate:S.rate}))}catch(e){}};
+const q=i=>S.q[i[0]]||{};
+const num=v=>parseFloat(v)||0;
+const f3=x=>x.toFixed(3),f2=x=>x.toFixed(2);
+const added=i=>['c','o','p','m'].some(k=>q(i)[k]!==undefined&&q(i)[k]!=='');
+const K=['c','o','p','m'];
+const HD='<div class="hd"><span>Sr</span><span>Brands</span><span>Carton</span><span>Outer</span><span>Packs</span><span>M\'s</span></div>';
+function sums(list){const t=[0,0,0,0];list.forEach(i=>K.forEach((k,j)=>t[j]+=num(q(i)[k])));return t}
+function totRow(label,s,cls){return `<div class="row ${cls||'tot'}"><span></span><span>${label}</span>${s.map(x=>`<span class="v">${f3(x)}</span>`).join('')}</div>`}
+const HDL='<div class="lr hl"><span>Sr</span><span>Brands</span></div>';
+const totL=(l,c)=>`<div class="lr ${c||'tot'}"><span></span><span>${l}</span></div>`;
+const totR=(s,c)=>`<div class="rr ${c||'tot'}">${s.map((x,j)=>`<span class="v">${j<3?String(+x.toFixed(3)):f3(x)}</span>`).join('')}</div>`;
+function blk(L,R,c){return `<div class="blk"><div class="lf">${L}</div><div class="sc ${c||''}" onscroll="syncScroll(this)"><div class="in">${R}</div></div></div>`}
+function r1(){
+ const sx=(document.querySelector('#v1 .sc')||{}).scrollLeft||0;
+ let h=blk(HDL,'<div class="rr hr">'+['Carton','Outer','Packs',"M's"].map(x=>`<span>${x}</span>`).join('')+'</div>','nb');
+ [F,V].forEach(g=>{const L=ITEMS.filter(i=>i[2]===g);let a='',b='';
+  L.forEach(i=>{a+=`<div class="lr" id="r${i[0]}"><span class="sr">${i[0]}</span><span class="nm">${i[1]}</span></div>`;
+   b+=`<div class="rr" id="x${i[0]}">`+K.map(k=>`<input class="n" inputmode="${k==='m'?'decimal':'tel'}" enterkeyhint="next" autocomplete="off"${k==='m'?' tabindex="-1"':''} value="${q(i)[k]??''}" onfocus="foc(this,${i[0]},'${k}')" onkeydown="nk(event,this)" oninput="if(!/^[=+]/.test(this.value.trim()))inp(${i[0]},'${k}',this.value);fit()" onblur="bl(this,${i[0]},'${k}')">`).join('')+`</div>`});
+  a+=totL('Total '+g);b+=`<div id="g${g}">${totR(sums(L))}</div>`;
+  h+=blk(a,b)});
+ h+=blk(totL('Grand Total','gt'),`<div id="gt">${totR(sums(ITEMS),'gt')}</div>`,'nb');
+ document.getElementById('v1').innerHTML=h;fit();
+ document.querySelectorAll('#v1 .sc').forEach(o=>o.scrollLeft=sx);
+ if(LK)document.querySelectorAll('#v1 input').forEach(x=>x.readOnly=true)}
+function inp(id,k,v){S.q[id]=S.q[id]||{};const Q=S.q[id];Q[k]=v;Q.F=Q.F||{};delete Q.F[k];
+ const p=PR.find(x=>x.id===id)||{},ppo=p.ppo||10,spp=p.spp||20,op=ppo*spp,cp=(p.opc||(p.cat==='VELO'?24:50))*op;
+ const e=document.getElementById('x'+id),ins=e?e.querySelectorAll('input'):[];
+ const sh=(j,x)=>{if(ins[j])ins[j].value=x?String(x):''};
+ if(k==='m'){delete Q.F.c;delete Q.F.o;delete Q.F.p;let t=Math.round(num(v)*1000);const c=Math.floor(t/cp);t-=c*cp;const o=Math.floor(t/op);t-=o*op;const pk=Math.floor(t/spp);Q.c=c?String(c):'';Q.o=o?String(o):'';Q.p=pk?String(pk):'';sh(0,Q.c);sh(1,Q.o);sh(2,Q.p)}
+ else{delete Q.F.m;const t=num(Q.c)*cp+num(Q.o)*op+num(Q.p)*spp;Q.m=t?(t/1000).toFixed(3):'';sh(3,Q.m)}
+ save();
+ [F,V].forEach(g=>document.getElementById('g'+g).innerHTML=totR(sums(ITEMS.filter(x=>x[2]===g))));
+ document.getElementById('gt').innerHTML=totR(sums(ITEMS),'gt');fit()}
+const HD2='<div class="hd s1"><span>Sr</span><span>Brands</span><span>Onhand</span><span>M\'s</span><span>Diff</span></div>';
+const HD3='<div class="hd s1 s2"><span>Sr</span><span>Brands</span><span>M\'s</span></div>';
+const dc=x=>x<-0.0005?' dn':x>0.0005?' dp':'';
+let S2=false;
+function tr1(l,a,c){return `<div class="row ${c||'tot'} s1${S2?' s2':''}"><span></span><span>${l}</span>${a.map((x,j)=>`<span class="v${a.length===3&&j===2?dc(x):''}">${f3(x)}</span>`).join('')}</div>`}
+function ohv(i){const o=(S.q.OH||{})[i[0]];return o===undefined||o===null||o===''?null:num(o)}
+function r2(){
+ const has=ITEMS.some(i=>ohv(i)!==null);S2=!has;
+ const L=ITEMS.filter(i=>added(i)||ohv(i)!==null);
+ if(!L.length){$('v2').innerHTML='<div class="empty">On Hands me abhi koi SKU add nahi hui</div>';return}
+ const tt=G=>{let o=0,m=0;G.forEach(i=>{o+=ohv(i)||0;m+=num(q(i).m)});return has?[o,m,o-m]:[m]};
+ let h=has?HD2:HD3;
+ [F,V].forEach(g=>{const G=L.filter(i=>i[2]===g);if(!G.length)return;
+  G.forEach(i=>{const o=ohv(i)||0,m=num(q(i).m);
+   h+=`<div class="row s1${has?'':' s2'}"><span class="sr">${i[0]}</span><span class="nm">${i[1]}</span>`+(has?`<span style="text-align:center">${f3(o)}</span><span style="text-align:center">${f3(m)}</span><span class="c${dc(o-m)}" style="text-align:center">${f3(o-m)}</span>`:`<span style="text-align:center">${f3(m)}</span>`)+`</div>`});
+  h+=tr1('Total '+g,tt(G))});
+ h+=tr1('Grand Total',tt(L),'gt');
+ $('v2').innerHTML='<div class="sc"><div class="in">'+h+'</div></div>';fitS()}
+function fitS(){const m=[3,3,3];document.querySelectorAll('#v2 .row').forEach(r=>{for(let j=0;j<3;j++){const c=r.children[2+j];if(!c)continue;const l=c.textContent.length;if(l>m[j])m[j]=l}});
+ const st=$('v2').style;m.forEach((l,j)=>st.setProperty('--s'+j,Math.max(62,l*9+18)+'px'))}
+function tab(n){TB=n;btns();document.getElementById('t1').className=n==1?'on':'';document.getElementById('t2').className=n==2?'on':'';
+ document.getElementById('v1').style.display=n==1?'':'none';document.getElementById('v2').style.display=n==2?'':'none';if(n==2)r2()}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',1800)}
+function exp(){
+ const L=ITEMS.filter(added);const s=sums(L);
+ let t=`On Hands - ${S.date}\n`;
+ L.forEach(i=>t+=`${i[0]}. ${i[1]} | Carton ${f3(num(q(i).c))} | Outer ${f3(num(q(i).o))} | Packs ${f3(num(q(i).p))} | M's ${f3(num(q(i).m))}\n`);
+ t+=`Grand Total | Carton ${f3(s[0])} | Outer ${f3(s[1])} | Packs ${f3(s[2])} | M's ${f3(s[3])}`;
+ if(navigator.share){navigator.share({text:t}).catch(()=>{});return}
+ try{navigator.clipboard.writeText(t).then(()=>toast('Copy ho gaya'),()=>toast('Copy nahi hua'))}catch(e){toast('Copy nahi hua')}}
+const dt=document.getElementById('dt');
+dt.value=S.date;dt.onchange=()=>{if(!dt.value){dt.value=S.date;return}save();S.date=dt.value;S.q=S.days[S.date]||(S.days[S.date]={});save();r1();r2()};
+function imp(inp){const f=inp.files[0];if(!f)return;const rd=new FileReader();
+rd.onload=e=>{try{
+ const wb=XLSX.read(e.target.result,{type:'array'});
+ const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''});
+ const norm=x=>String(x).toLowerCase().replace(/\s+/g,' ').trim();
+ let hdr=-1,ci={};
+ rows.forEach((r,ri)=>{if(hdr<0){const m=r.map(norm);if(m.includes('carton')){hdr=ri;m.forEach((x,j)=>{if(x==='carton')ci.c=j;if(x==='outer')ci.o=j;if(x==='packs')ci.p=j;if(x==="m's"||x==='ms'||x==='m')ci.m=j;if(x.startsWith('brand')||x==='sku')ci.b=j;if(x==='sr')ci.s=j})}}});
+ if(hdr<0){hdr=0;ci={s:0,b:1,c:2,o:3,p:4,m:5}}
+ let n=0;
+ rows.slice(hdr+1).forEach(r=>{
+  let it=ci.s!==undefined?ITEMS.find(i=>i[0]==r[ci.s]):null;
+  if(!it&&ci.b!==undefined){const nm=norm(r[ci.b]);it=ITEMS.find(i=>norm(i[1])===nm)}
+  if(!it)return;
+  K.forEach(k=>{if(ci[k]!==undefined&&r[ci[k]]!==''){S.q[it[0]]=S.q[it[0]]||{};S.q[it[0]][k]=String(r[ci[k]])}});n++});
+ save();r1();r2();toast(n+' SKU import hue')
+}catch(x){toast('Import fail ho gaya')}};
+rd.readAsArrayBuffer(f);inp.value=''}
+const $=x=>document.getElementById(x);
+let EID=null,ARM=null;
+function menu(o){$('mn').style.display=o?'block':'none';if(o){$('mq').value='';ARM=null;mlist()}}
+function mlist(){const k=$('mq').value.toLowerCase().trim();
+ $('pinfo').textContent=PR.length+' products loaded | Sticks column: Sticks/Outer';
+ const h=PR.map((p,n)=>[p,n]).filter(x=>x[0].name.toLowerCase().includes(k)).map(([p,n])=>`<div class="tr"><span>${n+1}</span><span class="pn" onclick="go(${p.id})">${p.name}</span><span>${p.cat}</span><span class="ac"><button onclick="edit(${p.id})">&#9998;</button><button class="${ARM===p.id?'arm':''}" onclick="del(${p.id})">&#128465;</button></span></div>`).join('');
+ $('ml').innerHTML=h||'<div class="empty">Koi product nahi mila</div>';
+ $('clb').textContent=ARM==='all'?'Sure? Dobara tap':'Clear Data'}
+function edit(id){EID=id;const p=id<0?{name:'',cat:'FMC',retail:'',ws:'',ppo:10,spp:20,opc:50}:PR.find(x=>x.id===id);
+ $('en').value=p.name;$('ec').value=p.cat;$('er').value=p.retail;$('ew').value=p.ws;$('eo').value=p.ppo;$('es').value=p.spp;$('eq').value=p.opc||(p.cat==='VELO'?24:50);
+ $('et').textContent=id<0?'Add New Product':'Edit Product';$('md').style.display='flex'}
+function esave(){const n=$('en').value.trim();if(!n){toast('Naam likhein');return}
+ const o={name:n,cat:$('ec').value,retail:num($('er').value),ws:num($('ew').value),ppo:num($('eo').value),spp:num($('es').value),opc:num($('eq').value)||($('ec').value==='VELO'?24:50)};
+ if(EID<0)PR.push(Object.assign({id:PR.reduce((m,p)=>Math.max(m,p.id),0)+1},o));else Object.assign(PR.find(p=>p.id===EID),o);
+ savePR();rebuild();r1();r2();mlist();$('md').style.display='none'}
+function del(id){if(ARM!==id){ARM=id;mlist();return}
+ PR=PR.filter(p=>p.id!==id);delete S.q[id];ARM=null;save();savePR();rebuild();r1();r2();mlist()}
+function clr(){if(ARM!=='all'){ARM='all';mlist();return}
+ PR=[];S.days={};S.q={};ARM=null;save();savePR();rebuild();r1();r2();mlist()}
+function upl(inp){const f=inp.files[0];if(!f)return;const rd=new FileReader();
+ rd.onload=e=>{try{const wb=XLSX.read(e.target.result,{type:'array'});
+ let rows=[];for(const sn of wb.SheetNames){rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:''});if(rows.filter(r=>r.some(c=>String(c).trim()!=='')).length>1)break}
+ const nm=x=>String(x).toLowerCase().replace(/\s+/g,' ').trim();
+ const pn=x=>{if(typeof x==='number')return x;const v=parseFloat(String(x).replace(/[^0-9.\-]/g,''));return isNaN(v)?0:v};
+ let hdr=-1,ci={},soutr=false;
+ rows.forEach((r,ri)=>{if(hdr>=0)return;const m=r.map(nm);
+  if(m.filter(x=>/name|product|brand|item|sku|descr/.test(x)).length&&m.filter(x=>/categ|retail|price|w\.?s|outer|stick|pack|sr/.test(x)).length>=1){hdr=ri;
+   m.forEach((x,j)=>{if(/name|product|brand|item|sku|descr/.test(x)){if(ci.n===undefined)ci.n=j}
+    else if(/categ|^cat$|type|group/.test(x))ci.c=j;
+    else if(/retail|mrp|^rp$/.test(x))ci.r=j;
+    else if(/w\.?\s?s|whole|^ws/.test(x))ci.w=j;
+    else if(/carton/.test(x))ci.q=j;
+    else if(/stick/.test(x)){ci.s=j;soutr=false}
+    else if(/pack|outer/.test(x))ci.o=j})}});
+ if(hdr<0){hdr=0;const sr=typeof (rows[0]||[])[0]==='number';ci=sr?{n:1,c:2,r:3,w:4,o:5,s:6}:{n:0,c:1,r:2,w:3,o:4,s:5};hdr=-1}
+ if(ci.n===undefined){toast('Name column nahi mila');return}
+ const L=[];rows.slice(hdr+1).forEach(r=>{const n=String(r[ci.n]??'').trim();if(!n||/^total/i.test(n))return;
+  const ppo=pn(r[ci.o])||10;let spp=pn(r[ci.s])||20;if(soutr&&ci.s!==undefined)spp=Math.round((pn(r[ci.s])||ppo*20)/ppo*1000)/1000;
+  L.push({id:L.length+1,name:n,cat:/velo/i.test(String(r[ci.c]??''))?'VELO':'FMC',retail:pn(r[ci.r]),ws:pn(r[ci.w]),ppo:ppo,spp:spp,opc:ci.q!==undefined?pn(r[ci.q]):0})});
+ if(!L.length){toast('Koi product nahi mila');return}
+ PR=L;S.days={};S.q={};save();savePR();rebuild();r1();r2();mlist();toast(L.length+' products load hue')
+ }catch(x){toast('Upload fail: '+(x&&x.message?x.message:x))}};rd.readAsArrayBuffer(f);inp.value=''}
+function go(id){menu(0);tab(1);const e=document.getElementById('r'+id);if(e){e.scrollIntoView({block:'start'});const inp=document.querySelector('#x'+id+' input');if(inp)inp.focus({preventScroll:true})}}
+let SQLDB=null;
+function b64(u){let s='';for(let i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s)}
+function ub64(t){const s=atob(t),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u}
+async function initDb(){try{if(typeof initSqlJs!=='function')return;const SQL=await initSqlJs();let raw=null;try{raw=localStorage.getItem('sqldb')}catch(e){}
+ SQLDB=raw?new SQL.Database(ub64(raw)):new SQL.Database();
+ SQLDB.run('CREATE TABLE IF NOT EXISTS products(id INTEGER PRIMARY KEY,name TEXT,category TEXT,retail REAL,ws REAL,packs_outer REAL,sticks_pack REAL)');
+ SQLDB.run('CREATE TABLE IF NOT EXISTS entries(date TEXT,product_id INTEGER,name TEXT,category TEXT,carton REAL,outer_qty REAL,packs REAL,m REAL,PRIMARY KEY(date,product_id))')}catch(e){SQLDB=null}}
+function dbSave(){if(!SQLDB)return false;try{
+ SQLDB.run('BEGIN');SQLDB.run('DELETE FROM products');
+ PR.forEach(p=>SQLDB.run('INSERT INTO products VALUES(?,?,?,?,?,?,?)',[p.id,p.name,p.cat,p.retail,p.ws,p.ppo,p.spp]));
+ SQLDB.run('DELETE FROM entries WHERE date=?',[S.date]);
+ ITEMS.filter(added).forEach(i=>{const x=q(i);SQLDB.run('INSERT INTO entries VALUES(?,?,?,?,?,?,?,?)',[S.date,i[0],i[1],i[2],num(x.c),num(x.o),num(x.p),num(x.m)])});
+ SQLDB.run('COMMIT');localStorage.setItem('sqldb',b64(SQLDB.export()));return true}catch(e){try{SQLDB.run('ROLLBACK')}catch(x){}return false}}
+async function saveAll0(){save();const ok=dbSave();toast('Save ho gaya'+(ok?' (SQLite)':''))}
+async function expCap(L){try{const P=window.Capacitor&&Capacitor.Plugins;if(!P||!P.Filesystem||!P.Share){exp();return}
+ const rows=[['Sr','Brands','Category','Carton','Outer','Packs',"M's"]].concat(L.map(i=>[i[0],i[1],i[2],num(q(i).c),num(q(i).o),num(q(i).p),num(q(i).m)]));
+ rows.push(['','Grand Total','',...sums(L)]);
+ const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'On Hands');
+ const b=XLSX.write(wb,{type:'base64',bookType:'xlsx'});
+ const r=await P.Filesystem.writeFile({path:'onhands-'+S.date+'.xlsx',data:b,directory:'CACHE'});
+ await P.Share.share({title:'On Hands '+S.date,url:r.uri})}catch(e){exp()}}
+async function expFile(){const L=ITEMS.filter(added);if(!L.length){exp();return}
+ try{const d=typeof claude!=='undefined'?await claude.use('downloads'):null;if(!d){await expCap(L);return}
+  const rows=[['Sr','Brands','Category','Carton','Outer','Packs',"M's"]].concat(L.map(i=>[i[0],i[1],i[2],num(q(i).c),num(q(i).o),num(q(i).p),num(q(i).m)]));
+  rows.push(['','Grand Total','',...sums(L)]);
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'On Hands');
+  const buf=XLSX.write(wb,{type:'array',bookType:'xlsx'});
+  await d.save({filename:'onhands-'+S.date+'.xlsx',data:new Uint8Array(buf)});toast('File save ho gayi')
+ }catch(e){toast('File save nahi hui')}}
+async function saveAll(){await saveAll0();lock()}
+const PH='15c657992aa30d3d6999bad67c72e24d2e2cb3bc4a94b773f24dcec435d16bc2';
+async function sha(t){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')}
+let TB=1;
+function btns(){$('sv').style.display=(TB===1&&!LK)?'':'none';$('up').style.display=TB===2?'':'none';$('ul').style.display=LK?'':'none'}
+let LK=false;
+function applyLock(on){LK=on;document.body.classList.toggle('locked',on);$('dt').disabled=on;$('mb').disabled=on;
+ btns();
+ document.querySelectorAll('#v1 input').forEach(x=>x.readOnly=on);
+ if(on){$('mn').style.display='none';$('md').style.display='none';if(document.activeElement)document.activeElement.blur()}}
+function showLock(){applyLock(true)}
+function askUnlock(){$('lp').value='';$('le').textContent='';$('lk').style.display='flex';$('lp').focus()}
+function lock(){try{localStorage.setItem('oh2lock','1')}catch(e){}showLock()}
+async function unlock(){let ok=false;try{ok=(await sha($('lp').value))===PH}catch(e){}
+ if(ok){try{localStorage.removeItem('oh2lock')}catch(e){}$('lk').style.display='none';applyLock(false)}else{$('le').textContent='Password galat hai'}}
+try{if(localStorage.getItem('oh2lock'))showLock()}catch(e){}
+function ev(t){let p=0;const w=()=>{while(t[p]===' ')p++};
+ function ex(){let v=tm();for(;;){w();const c=t[p];if(c==='+'){p++;v+=tm()}else if(c==='-'){p++;v-=tm()}else return v}}
+ function tm(){let v=fc();for(;;){w();const c=t[p];if(c==='*'){p++;v*=fc()}else if(c==='/'){p++;v/=fc()}else return v}}
+ function fc(){w();if(t[p]==='-'){p++;return -fc()}if(t[p]==='+'){p++;return fc()}if(t[p]==='('){p++;const v=ex();w();if(t[p]!==')')throw 0;p++;return v}
+  const m=/^\d*\.?\d+|^\d+\.?/.exec(t.slice(p));if(!m)throw 0;p+=m[0].length;return parseFloat(m[0])}
+ const r=ex();w();if(p<t.length)throw 0;return r}
+function calc(el,id,k){const v=el.value.trim();if(!/^[=+]/.test(v))return;
+ try{let r=ev(v[0]==='='?v.slice(1):v);if(!isFinite(r))throw 0;r=Math.round(r*1000)/1000;el.value=String(r);inp(id,k,String(r));S.q[id].F[k]=v;save();fit()}
+ catch(e){toast('Galat formula');el.value='';inp(id,k,'')}}
+function foc(el,id,k){const Q=S.q[id],f=Q&&Q.F&&Q.F[k];if(f)el.value=f;el.select();fit()}
+function bl(el,id,k){const Q=S.q[id]||{},v=el.value.trim();
+ if(/^[=+]/.test(v)){calc(el,id,k);return}
+ if(Q.F&&Q.F[k]&&v===Q.F[k]){el.value=Q[k]??'';fit()}}
+function fit(){const m=[3,3,3,3];document.querySelectorAll('#v1 .rr:not(.hr)').forEach(r=>{for(let j=0;j<4;j++){const c=r.children[j];if(!c)continue;const l=(c.value!==undefined?c.value:c.textContent).length;if(l>m[j])m[j]=l}});
+ const st=$('v1').style;m.forEach((l,j)=>st.setProperty('--w'+j,Math.max(52,l*9+18)+'px'))}
+let SY=false;
+function syncScroll(el){if(SY)return;SY=true;const x=el.scrollLeft;document.querySelectorAll('#v1 .sc').forEach(o=>{if(o!==el)o.scrollLeft=x});SY=false}
+function nk(e,el){if(e.key!=='Enter')return;e.preventDefault();const all=[...document.querySelectorAll('#v1 input.n')];let j=all.indexOf(el)+1;
+ while(j<all.length&&all[j].getAttribute('tabindex')==='-1')j++;
+ if(all[j])all[j].focus();else el.blur()}
+let SMP=null;
+(async()=>{try{if(typeof claude!=='undefined')SMP=await claude.use('sample')}catch(e){}})();
+function pickImg(){$('imf').click()}
+function busy(on){const b=$('up');b.disabled=on;b.innerHTML=on?'<span class="sp"></span>Processing':'Upload'}
+async function readImg(inp){const f=inp.files[0];inp.value='';if(!f)return;busy(true);let map={},raw='',err='';
+ try{if(SMP)map=await viaClaude(f);else if(gk())map=await viaApi(f);else if(window.Tesseract){const o=await ocrText(f);raw=o.text;map=parseLines(o.lines.length?o.lines:o.text.split('\n').map(t=>({t,y:null})))}else err='Image padhna yahan available nahi'}
+ catch(e){err='Image nahi parhi ja saki: '+(e&&e.message?e.message:(e&&e.code)||e)}
+ busy(false);showRev(map,raw,err)}
+function imgPrompt(){const list=ITEMS.map(i=>i[0]+'. '+i[1]).join('\n');
+ return 'This is a photo or screenshot of a stock report. List the numeric figures written in the image from top to bottom, one entry per row, in order. Reference product list (Sr. Name):\n'+list+'\nReturn ONLY JSON like {"rows":[{"sr":number or null,"name":string or null,"value":number or null}]}. Fill sr and name only if they are printed on that row of the image. value is the figure as a plain number without commas, null if that cell is blank.'}
+function rowsToMap(rows){const m={};(rows||[]).forEach((w,idx)=>{const it=(w.sr!=null?ITEMS.find(i=>i[0]==w.sr):null)||ITEMS[idx];if(!it||w.value==null||isNaN(+w.value))return;m[it[0]]=+w.value});return m}
+async function viaClaude(f){const r=await SMP.json(imgPrompt(),{images:[f]});return rowsToMap(r&&r.rows)}
+function gk(){try{return localStorage.getItem('akey')||''}catch(e){return ''}}
+function saveKey(){const k=$('rvkey').value.trim();if(!k){toast('Key likhein');return}
+ try{localStorage.setItem('akey',k)}catch(e){}$('rvkey').value='';$('rvkey').placeholder='Key save hai';toast('Key save ho gayi. Dobara Upload karein');$('rv').style.display='none'}
+async function viaApi(f){
+ const c=await prep(f);let b64,mt='image/jpeg';
+ if(c&&c.toDataURL){b64=c.toDataURL('image/jpeg',0.85).split(',')[1]}
+ else{b64=await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(',')[1]);r.onerror=no;r.readAsDataURL(f)});mt=f.type||'image/jpeg'}
+ const to=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),90000));
+ const res=await Promise.race([fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':gk(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+  body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mt,data:b64}},{type:'text',text:imgPrompt()}]}]})}),to]);
+ const j=await res.json();if(!res.ok)throw new Error((j.error&&j.error.message)||('HTTP '+res.status));
+ const t=(j.content||[]).map(x=>x.text||'').join('').replace(/```json|```/g,'').trim();
+ return rowsToMap(JSON.parse(t.slice(t.indexOf('{'),t.lastIndexOf('}')+1)).rows)}
+function parseLines(lines){
+ const re=/(?<![\w.])-?\d+(?:[.,]\d+)?(?!\s*(?:hl|mg)\b)(?![\w])/gi;
+ const ys=lines.map(l=>l.y).filter(y=>y!=null);let pitch=0;
+ if(ys.length>3){const d=[];for(let i=1;i<ys.length;i++)d.push(ys[i]-ys[i-1]);d.sort((a,b)=>a-b);pitch=d[Math.floor(d.length/2)]}
+ const rows=[];let prevY=null;
+ lines.forEach(l=>{const t=String(l.t).trim();if(!t)return;
+  if(/^(grand\s*)?total/i.test(t)||/\d+\s*[\/\-.]\s*\d+\s*[\/\-.]\s*\d{2,4}/.test(t))return;
+  const nums=(t.match(re)||[]).map(x=>parseFloat(x.replace(',','.')));
+  const dash=!nums.length&&/^[\s\-\u2013\u2014_=~.:|]+$/.test(t);
+  if(!nums.length&&!dash)return;
+  if(pitch>0&&prevY!=null&&l.y!=null){const gap=Math.round((l.y-prevY)/pitch)-1;for(let g=0;g<gap&&g<5;g++)rows.push(null)}
+  if(l.y!=null)prevY=l.y;
+  rows.push(nums.length?nums[nums.length-1]:null)});
+ const m={};rows.forEach((v,k)=>{if(v!==null&&k<ITEMS.length)m[ITEMS[k][0]]=v});return m}
+async function prep(f){try{const u=URL.createObjectURL(f);
+ const im=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=u});
+ const sc=Math.min(4,1800/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);
+ const g=c.getContext('2d');g.filter='grayscale(1) contrast(1.4)';g.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);return c}catch(e){return f}}
+async function ocrText(f){const base=new URL('tesseract/',location.href).href;
+ const run=(async()=>{const w=await Tesseract.createWorker('eng',1,{workerPath:base+'worker.min.js',corePath:base,langPath:base,gzip:true});
+  try{const cv=await prep(f);const narrow=cv&&cv.height&&cv.width&&cv.height/cv.width>2.5;
+   try{await w.setParameters(Object.assign({tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'},narrow?{tessedit_char_whitelist:'0123456789.,-'}:{}))}catch(e){}
+   const r=await w.recognize(cv);return {text:r.data.text,lines:(r.data.lines||[]).map(l=>({t:l.text,y:l.bbox?(l.bbox.y0+l.bbox.y1)/2:null}))}}finally{try{await w.terminate()}catch(e){}}})();
+ const to=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),120000));
+ return Promise.race([run,to])}
+function showRev(map,raw,err){const oh=S.q.OH||{};const n=Object.keys(map).length;
+ $('rvm').textContent=err?err+' - figures neeche khud likh sakte hain.':n+' figures mile (Sr 1 se). Check karke Apply dabayein.';
+ $('rvl').innerHTML=ITEMS.map(i=>{const v=map[i[0]]!==undefined?map[i[0]]:(oh[i[0]]!==undefined?oh[i[0]]:'');return `<div class="rvr"><span>${i[0]}</span><span class="nm">${i[1]}</span><input data-id="${i[0]}" inputmode="decimal" value="${v}"></div>`}).join('');
+ $('rvk').style.display=SMP?'none':'block';if(gk())$('rvkey').placeholder='Key save hai (badalne ke liye nayi likhein)';$('rvt').textContent=raw||'(khali)';$('rv').style.display='flex'}
+function applyRev(){S.q.OH=S.q.OH||{};let n=0;
+ document.querySelectorAll('#rvl input').forEach(x=>{const id=x.dataset.id,v=x.value.trim().replace(',','.');if(v===''){delete S.q.OH[id]}else if(!isNaN(parseFloat(v))){S.q.OH[id]=parseFloat(v);n++}});
+ save();r2();$('rv').style.display='none';toast(n+' figures Onhand me save hue')}
+initDb();
+r1();
+</script></body></html>
