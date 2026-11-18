@@ -1,0 +1,5 @@
+node_modules/
+android/
+www/xlsx.full.min.js
+www/sql-asm.js
+www/tesseract/
